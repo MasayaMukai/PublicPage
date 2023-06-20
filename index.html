@@ -1,48 +1,106 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Flowchart Example</title>
+  <title>Dynamic Table Creation</title>
   <style>
-    canvas {
-      border: 1px solid black;
+    .draggable {
+      position: absolute;
+      user-select: none;
+      border: 1px solid black; /* テーブルの境界線を表示 */
+    }
+    
+    .draggable td {
+      padding: 5px; /* セルの余白を追加 */
     }
   </style>
 </head>
 <body>
-  <canvas id="flowchartCanvas" width="800" height="600"></canvas>
+  <button id="createTableButton">表を作成</button>
+  <div id="tableContainer"></div>
 
   <script>
-    // Canvas要素の参照を取得
-    var canvas = document.getElementById('flowchartCanvas');
-    var ctx = canvas.getContext('2d');
+    // ボタン要素とテーブルを表示するコンテナ要素の参照を取得
+    var createTableButton = document.getElementById('createTableButton');
+    var tableContainer = document.getElementById('tableContainer');
 
-    // フローチャートの描画関数を定義
-    function drawFlowchart() {
-      // 描画処理を記述
+    // アルファベットの配列
+    var alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
-      // 例: フローチャートの要素を描画する
-      ctx.beginPath();
-      ctx.rect(50, 50, 100, 50); // 位置(x, y)とサイズ(width, height)を指定
-      ctx.fillStyle = 'blue'; // 色を指定
-      ctx.fill();
-      ctx.closePath();
+    // ボタンのクリックイベントの処理を定義
+    createTableButton.addEventListener('click', function() {
+      var rows = parseInt(prompt('行数を入力してください'));
+      var columns = parseInt(prompt('列数を入力してください'));
 
-      // 他の要素も同様に描画する
-    }
+      // 表を作成
+      var table = document.createElement('table');
+      table.className = 'draggable'; // ドラッグ可能なクラスを追加
 
-    // フローチャートを描画するための関数を呼び出す
-    drawFlowchart();
+      // 行とセルを追加
+      var rowData = new Array(columns).fill(0); // 各列の合計値を格納する配列
+      for (var i = 0; i <= rows; i++) {
+        var row = document.createElement('tr');
 
-    // Canvas上でのクリックイベントの処理例
-    canvas.addEventListener('click', function(event) {
-      var x = event.clientX - canvas.getBoundingClientRect().left;
-      var y = event.clientY - canvas.getBoundingClientRect().top;
+        for (var j = 0; j < columns; j++) {
+          var cell = document.createElement('td');
+          var input = document.createElement('input');
+          input.type = (i === 0) ? 'text' : 'number'; // 0行目はテキスト入力、それ以外は数字入力
+          if (i === 0) {
+            input.value = "組成"+alphabet.charAt(j); // 0行目のセルにアルファベットを表示
+            input.disabled = true; // 0行目のセルを編集不可にする
+          } else {
+            input.addEventListener('input', function(event) {
+              var rowIndex = event.target.parentNode.parentNode.rowIndex; // 入力されたセルの行インデックス
+              var columnIndex = event.target.parentNode.cellIndex; // 入力されたセルの列インデックス
+              var value = parseFloat(event.target.value); // 入力された値
 
-      // クリックされた座標にフローチャートの要素があるかどうか判定し、詳細を表示するなどの処理を実装
+              rowData[columnIndex] += value; // 列の合計値を更新
+
+              // 一番下の行に割合を表示
+              var lastRow = table.rows[rows];
+              var lastCell = lastRow.cells[columnIndex];
+              lastCell.textContent = (rowData[columnIndex] / rows).toFixed(2); // 割合を表示（小数点以下2桁まで）
+
+            });
+          }
+          cell.appendChild(input);
+          row.appendChild(cell);
+        }
+
+        table.appendChild(row);
+      }
+
+      // テーブルの初期位置を設定
+      table.style.left = '0px';
+      table.style.top = '0px';
+
+      // テーブルのドラッグ処理を実装
+      var isDragging = false;
+      var offset = { x: 0, y: 0 };
+
+      table.addEventListener('mousedown', function(event) {
+        isDragging = true;
+        offset.x = event.offsetX;
+        offset.y = event.offsetY;
+      });
+
+      table.addEventListener('mousemove', function(event) {
+        if (isDragging) {
+          var x = event.clientX - offset.x;
+          var y = event.clientY - offset.y;
+          table.style.left = x + 'px';
+          table.style.top = y + 'px';
+        }
+      });
+
+      table.addEventListener('mouseup', function() {
+        isDragging = false;
+      });
+
+      // コンテナ要素に新しい表を追加
+      tableContainer.appendChild(table);
     });
   </script>
 </body>
 </html>
-
 
 
