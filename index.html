@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Flowchart Example</title>
+  <style>
+    canvas {
+      border: 1px solid black;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="flowchartCanvas" width="800" height="600"></canvas>
+
+  <script>
+    // Canvas要素の参照を取得
+    var canvas = document.getElementById('flowchartCanvas');
+    var ctx = canvas.getContext('2d');
+
+    // フローチャートの描画関数を定義
+    function drawFlowchart() {
+      // 描画処理を記述
+
+      // 例: フローチャートの要素を描画する
+      ctx.beginPath();
+      ctx.rect(50, 50, 100, 50); // 位置(x, y)とサイズ(width, height)を指定
+      ctx.fillStyle = 'blue'; // 色を指定
+      ctx.fill();
+      ctx.closePath();
+
+      // 他の要素も同様に描画する
+    }
+
+    // フローチャートを描画するための関数を呼び出す
+    drawFlowchart();
+
+    // Canvas上でのクリックイベントの処理例
+    canvas.addEventListener('click', function(event) {
+      var x = event.clientX - canvas.getBoundingClientRect().left;
+      var y = event.clientY - canvas.getBoundingClientRect().top;
+
+      // クリックされた座標にフローチャートの要素があるかどうか判定し、詳細を表示するなどの処理を実装
+    });
+  </script>
+</body>
+</html>
+
+
+
